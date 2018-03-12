@@ -70,6 +70,12 @@ const octopus = {
         //Adds Cat Counter To Page (Does Not Increment)
         catArea.addCounterToDOM(idToPass);
 
+        catArea.addAdminButton();
+        catArea.createAdminPanel(idToPass);
+        octopus.makeAdminButtonClickable(idToPass);
+        octopus.cancelButtonInteraction();
+        octopus.saveButtonInteraction(idToPass);
+
       });
     });
   },
@@ -82,6 +88,8 @@ const octopus = {
       cats[id].counter += 1;
       //Updates DOM Counter
       catArea.renderCounter(cats[id].counter);
+      //Update Placeholder value for form
+      catArea.adminPanelUpdate(id);
     });
   },
 
@@ -95,6 +103,55 @@ const octopus = {
 
   getCatCount: (passedID)=>{
     return cats[passedID].counter;
+  },
+
+  makeAdminButtonClickable: (id)=>{
+    const admBtn = document.getElementById('admin-button');
+    admBtn.addEventListener('click',function(){
+      console.log("button was clicked");
+
+      //Show/Hide Admin Panel On Click of Button
+      document.getElementById('admin-panel').classList.toggle('hidden');
+
+      //Update Placeholder value for form
+      catArea.adminPanelUpdate(id);
+
+    })
+  },
+
+  cancelButtonInteraction: ()=>{
+    const button = document.getElementById('cancel-button');
+    button.addEventListener('click',function(){
+      document.getElementById('admin-panel').classList.add('hidden');
+
+    });
+  },
+
+  saveButtonInteraction: (id)=>{
+    const button = document.getElementById('save-button');
+    button.addEventListener('click',function(){
+      console.log("Save Button was clicked");
+
+      //If Changed:
+        //Update Name, Source, Counter to Model
+      console.log(catArea.getAdminName()==cats[id].name);
+
+      if(catArea.getAdminName()!=cats[id].name){
+        console.log("Name has changed!");
+        cats[id].name = catArea.getAdminName();
+      }
+      if(catArea.getAdminSource()!=cats[id].pic){
+        console.log("Pic Source has changed!");
+        cats[id].pic = catArea.getAdminSource();
+      }
+      if(catArea.getAdminCount()!=cats[id].counter){
+        console.log("Counter has changed!");
+        cats[id].counter = catArea.getAdminCount();
+      }
+
+      document.getElementById(id).click();
+
+    });
   }
 
 };
@@ -147,6 +204,17 @@ const catArea = {
     document.querySelector('.catcontainer').appendChild(newCounterNode);
   },
 
+  addAdminButton: ()=>{
+    const button = document.createElement('button');
+    button.setAttribute('type','button');
+    button.setAttribute('id','admin-button');
+    button.textContent = 'admin';
+
+    document.querySelector('.catcontainer').appendChild(button);
+
+
+  },
+
   clearCat: ()=>{
 
     if(document.getElementById('current-image')){
@@ -163,6 +231,16 @@ const catArea = {
       const counter = document.getElementById('counter-node');
       counter.remove();
     }
+
+    if(document.getElementById('admin-button')){
+      const button = document.getElementById('admin-button');
+      button.remove();
+    }
+
+    if(document.getElementById('admin-panel')){
+      const panel = document.getElementById('admin-panel');
+      panel.remove();
+    }
   },
 
   createNewImage: (id)=>{
@@ -176,6 +254,70 @@ const catArea = {
 
   renderCounter: (updatedCount)=>{
     document.getElementById('counter-node').textContent = `This cat was clicked ${updatedCount} times!`;
+  },
+
+  createAdminPanel: (id)=>{
+    const newDiv = document.createElement('div');
+    newDiv.setAttribute('id','admin-panel');
+    newDiv.setAttribute('class','hidden');
+
+    newDiv.insertAdjacentHTML('afterbegin','<h1>Admin Panel</h1>');
+
+    const catName = octopus.getCatName(id);
+    const catSource = octopus.getCatSrc(id);
+    const catCount = octopus.getCatCount(id);
+
+    const form = document.createElement('form');
+    form.innerHTML =   `<div id="admin-inputs">
+        <div class="cinput">
+        <label for="uname">Cat Name: </label>
+        <input type="text" id="catName" value="${catName}" placeholder="${catName}">
+        </div>
+        <div class="cinput">
+        <label for="uname">Cat Source: </label>
+        <input type="text" id="catSource" value="${catSource}" placeholder="${catSource}">
+        </div>
+        <div class="cinput">
+        <label for="uname">Cat Counter: </label>
+        <input type="text" id="catCounter" value="${catCount}" placeholder="${catCount}">
+        </div>
+      </div>
+      <div id="admin-controls">
+        <button type="button" id="save-button">Save</button>
+        <button type="button" id="cancel-button">Cancel</button>
+      </div>`
+
+    newDiv.appendChild(form);
+    //Insert to end of cat container
+    document.querySelector('.catcontainer').appendChild(newDiv);
+  },
+
+  adminPanelUpdate: (id)=>{
+    const catName = octopus.getCatName(id);
+    const catSource = octopus.getCatSrc(id);
+    //Use This For Now, but should update all of them
+    const catCount = octopus.getCatCount(id);
+
+    const input = document.getElementById('catCounter');
+    input.setAttribute('placeholder',catCount);
+
+    const input2 = document.getElementById('catName');
+    input2.setAttribute('placeholder',catName);
+
+    const input3 = document.getElementById('catSource');
+    input3.setAttribute('placeholder',catSource);
+  },
+
+  getAdminName: ()=>{
+    return document.getElementById('catName').value;
+  },
+
+  getAdminSource: ()=>{
+    return document.getElementById('catSource').value;
+  },
+
+  getAdminCount: ()=>{
+    return document.getElementById('catCounter').value;
   }
 };
 

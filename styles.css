@@ -1,18 +1,42 @@
 .container {
   padding: 10px;
+  display: flex;
 }
 
 .name-container {
   display: flex;
+  flex-direction: column;
 }
 
 .catName {
-  margin: 0 10px;
+  margin: 10px;
   padding: 10px;
   border: 1px solid black;
   background-color: beige;
 }
 
 .catcontainer {
-  margin-top: 10px;
+  margin: auto;
+}
+
+button {
+  border: 1px solid black;
+}
+
+.hidden {
+  display: none;
+}
+
+#admin-panel {
+  border: 1px solid black;
+  margin: 10px;
+  padding: 20px;
+}
+
+input {
+  border: 1px solid black;
+}
+
+.cinput {
+  margin: 10px 0;
 }
